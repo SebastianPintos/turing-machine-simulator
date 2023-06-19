@@ -24,7 +24,6 @@ CREATE TABLE traza_ejecucion(
 );
 
 CREATE TABLE alfabeto(
-	id serial PRIMARY KEY,
     valor char(1) NOT NULL
 );
 
@@ -34,13 +33,23 @@ CREATE OR REPLACE FUNCTION simuladorMT(cinta_input varchar(200))
 DECLARE
     prog programa%ROWTYPE;
     cin cinta%ROWTYPE;
-    t_est varchar(50) DEFAULT 'q0';
+    t_est varchar(50)
+    DEFAULT 'q0';
     cin_long integer;
     i integer := 1;
     pos integer := 1;
+	caracter char(1);
 BEGIN
 	cinta_input = CONCAT(cinta_input, '_');
     cin_long := length(cinta_input);
+	
+	FOR i IN 1..LENGTH(cinta_input) LOOP
+		caracter = SUBSTRING(cinta_input FROM i FOR 1);
+		IF NOT EXISTS (SELECT * FROM alfabeto WHERE valor = caracter) THEN
+			RAISE NOTICE 'El caracter % no pertenece al lenguaje.', caracter;
+			RETURN;
+		END IF;
+	END LOOP;
 	
     SELECT
         * INTO prog
@@ -57,20 +66,6 @@ BEGIN
 			
         IF prog.estado_ori <> prog.estado_nue AND t_est <> prog.estado_nue THEN
             t_est := prog.estado_nue;
-        END IF;
-        IF prog.caracter_nue <>(
-            SELECT
-                valor
-            FROM
-                cinta
-            WHERE
-                cinta_id = pos) THEN
-            UPDATE
-                cinta
-            SET
-                valor = prog.caracter_nue
-            WHERE
-                cinta_id = pos;
         END IF;
         IF prog.desplazamiento = 'R' THEN
             pos = pos + 1;
@@ -98,3 +93,4 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql';
+
