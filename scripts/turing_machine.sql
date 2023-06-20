@@ -11,11 +11,11 @@ DECLARE
     caracter char(1);
 BEGIN
     DELETE FROM traza_ejecucion;
-    -- add blanks at borders
+    -- agrega espacios en blanco en los bordes
     cinta_input = CONCAT(cinta_input, '_');
     cinta_input = CONCAT('_', cinta_input);
     cin_long := length(cinta_input);
-    -- check if characters belong to language
+    -- verifica si los caracteres pertenecen al idioma  
     FOR i IN 1..LENGTH(cinta_input)
     LOOP
         caracter = SUBSTRING(cinta_input FROM i FOR 1);
@@ -26,11 +26,12 @@ BEGIN
                 alfabeto
             WHERE
                 valor = caracter) THEN
-        RAISE NOTICE 'El caracter % no pertenece al lenguaje.', caracter;
-        RETURN;
-    END IF;
-END LOOP;
-    -- select initial state
+            RAISE NOTICE 'El caracter % no pertenece al lenguaje.', caracter;
+            RETURN;
+        END IF;
+    END LOOP;
+
+    -- selecciona estado inicial
     SELECT
         * INTO prog
     FROM
@@ -39,20 +40,23 @@ END LOOP;
         estado_ori = 'q0'
         AND caracter_ori = substring(cinta_input FROM pos FOR 1)
     LIMIT 1;
-    -- iterate until final state is reached
+
+    -- itera hasta alcanzar el estado final
     WHILE t_est <> 'f' LOOP
-        -- add to traza_ejecucion every step run by the machine
+        -- añade a la traza_ejecucion cada paso realizado por la máquina
         INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
             VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
-        -- check that is in a valid state
+        
+        -- comprueba que está en un estado válido
         IF prog.estado_ori IS NULL AND prog.caracter_ori IS NULL AND prog.estado_nue IS NULL AND prog.caracter_nue IS NULL THEN
             exit;
         END IF;
-        -- if the character given by the program is different from the actual one, that represents a change in the string so we need to change it
+
+        -- si el caracter dado por el programa es diferente del real, eso representa un cambio en la cadena, por lo que debemos actualizar el cambio
         IF prog.caracter_ori <> prog.caracter_nue THEN
             cinta_input = CONCAT(SUBSTRING(cinta_input FROM 1 FOR pos - 1), prog.caracter_nue, SUBSTRING(cinta_input FROM pos + 1));
             RAISE NOTICE 'Cambio en la cinta: %', cinta_input;
-            -- save the new string in traza_ejecucion
+            -- guarda la nueva cadena en traza_ejecucion
             UPDATE
                 traza_ejecucion
             SET
@@ -64,11 +68,13 @@ END LOOP;
                     FROM
                         traza_ejecucion);
         END IF;
-        -- update the state for the next step
+
+        -- actualiza el estado para el siguiente paso
         IF prog.estado_ori <> prog.estado_nue AND t_est <> prog.estado_nue THEN
             t_est := prog.estado_nue;
         END IF;
-        --move left or right
+
+        --mueve posición a la izquierda o a la derecha
         IF prog.desplazamiento = 'R' THEN
             pos = pos + 1;
         END IF;
@@ -76,7 +82,7 @@ END LOOP;
             pos = pos - 1;
         END IF;
 
-        -- select the function for the next step
+        -- selecciona la función para el siguiente paso
         SELECT
             * INTO prog
         FROM
@@ -88,7 +94,7 @@ END LOOP;
     END LOOP;
     RAISE NOTICE 'estado final string %', cinta_input;
 
-    -- check if final state is present in traza_ejecucion. This means that the final state has been reached.
+    -- comprueba si el estado final está presente en traza_ejecucion. Esto significa que se ha alcanzado el estado final.
     IF t_est = 'f' THEN
         INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
             VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);

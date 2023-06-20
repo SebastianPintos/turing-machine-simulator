@@ -1,5 +1,3 @@
-\c turingmachine
-
 DROP TABLE IF EXISTS programa;
 DROP TABLE IF EXISTS traza_ejecucion;
 DROP TABLE IF EXISTS alfabeto;
