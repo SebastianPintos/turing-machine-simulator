@@ -19,3 +19,4 @@ INSERT INTO programa VALUES ('q2','1','q2','1','R');
 INSERT INTO programa VALUES ('q0','_','f','_','_');
 
 SELECT simuladorMT('1001');
+SELECT * FROM traza_ejecucion;
