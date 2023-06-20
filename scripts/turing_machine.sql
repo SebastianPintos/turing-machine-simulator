@@ -1,32 +1,3 @@
-DROP SCHEMA IF EXISTS turingMachine CASCADE;
-
-DROP TABLE IF EXISTS programa;
-
-DROP TABLE IF EXISTS traza_ejecucion;
-
-DROP TABLE IF EXISTS alfabeto;
-
-CREATE TABLE programa(
-    estado_ori varchar(50) NOT NULL,
-    caracter_ori varchar(50) NOT NULL,
-    estado_nue varchar(50) NOT NULL,
-    caracter_nue varchar(50) NOT NULL,
-    desplazamiento varchar(50) NOT NULL
-);
-
-CREATE TABLE traza_ejecucion(
-    traza_id serial PRIMARY KEY,
-    estado_ori varchar(50),
-    caracter_ori varchar(50),
-    estado_nue varchar(50),
-    caracter_nue varchar(50),
-    desplazamiento varchar(50)
-);
-
-CREATE TABLE alfabeto(
-    valor char(1) NOT NULL
-);
-
 CREATE OR REPLACE FUNCTION simuladorMT(cinta_input varchar(200))
     RETURNS VOID
     AS $$
@@ -53,10 +24,11 @@ BEGIN
                 alfabeto
             WHERE
                 valor = caracter) THEN
-        RAISE NOTICE 'El caracter % no pertenece al lenguaje.', caracter;
-        RETURN;
-    END IF;
-END LOOP;
+            RAISE NOTICE 'El caracter % no pertenece al lenguaje.', caracter;
+            RETURN;
+        END IF;
+    END LOOP;
+
     SELECT
         * INTO prog
     FROM
@@ -65,21 +37,38 @@ END LOOP;
         estado_ori = 'q0'
         AND caracter_ori = substring(cinta_input FROM pos FOR 1)
     LIMIT 1;
-    WHILE t_est <> 'f'
-    AND counter < 200 LOOP
-        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento)
-            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento);
-        cinta_input = CONCAT(SUBSTRING(cinta_input FROM 1 FOR pos - 1), prog.caracter_nue, SUBSTRING(cinta_input FROM pos + 1));
+
+    WHILE t_est <> 'f' AND counter < 200 LOOP
+        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
+            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
+
+        IF prog.caracter_ori <> prog.caracter_nue  THEN
+          cinta_input = CONCAT(SUBSTRING(cinta_input FROM 1 FOR pos - 1), prog.caracter_nue, SUBSTRING(cinta_input FROM pos + 1));
+          RAISE NOTICE 'Cambio en la cinta: %', cinta_input;
+          UPDATE traza_ejecucion
+              SET cadena = cinta_input
+              WHERE traza_id = (
+                  SELECT max(traza_ejecucion.traza_id)
+                  FROM traza_ejecucion);
+        END IF;
+
         IF prog.estado_ori <> prog.estado_nue AND t_est <> prog.estado_nue THEN
             t_est := prog.estado_nue;
+        ELSE
+            RAISE NOTICE 'T_est: %', t_est;
         END IF;
+
+
         IF prog.desplazamiento = 'R' THEN
             pos = pos + 1;
         END IF;
+
         IF prog.desplazamiento = 'L' THEN
             pos = pos - 1;
         END IF;
+
         counter = counter + 1;
+
         SELECT
             * INTO prog
         FROM
@@ -89,10 +78,11 @@ END LOOP;
             AND caracter_ori = substring(cinta_input FROM pos FOR 1)
         LIMIT 1;
     END LOOP;
-    RAISE NOTICE 'estado final %', prog.estado_nue;
+
+    RAISE NOTICE 'estado final string %', cinta_input;
     IF t_est = 'f' THEN
-        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento)
-            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento);
+        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
+            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
         RAISE NOTICE 'El string SI pertenece al lenguaje';
     ELSE
         RAISE NOTICE 'El string NO pertenece al lenguaje';
@@ -100,4 +90,3 @@ END LOOP;
 END;
 $$
 LANGUAGE 'plpgsql';
-
