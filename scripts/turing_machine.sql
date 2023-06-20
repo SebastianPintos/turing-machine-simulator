@@ -102,7 +102,7 @@ END LOOP;
             AND caracter_ori = substring(cinta_input FROM pos FOR 1)
         LIMIT 1;
     END LOOP;
-    RAISE NOTICE 'estado final %', prog.estado_nue;
+    RAISE NOTICE 'estado final cinta: %', cinta_input;
     IF t_est = 'f' THEN
         INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
             VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
