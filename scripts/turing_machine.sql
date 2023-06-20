@@ -1,4 +1,6 @@
-DROP SCHEMA IF EXISTS turingMachine CASCADE;
+DROP DATABASE IF EXISTS postgres;
+
+CREATE DATABASE postgres;
 
 DROP TABLE IF EXISTS programa;
 
