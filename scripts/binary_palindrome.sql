@@ -42,3 +42,4 @@ INSERT INTO programa VALUES ('qSearch1L','_','f','_','_');
 INSERT INTO programa VALUES ('qSearch1R','_','f','_','_');
 
 SELECT simuladorMT('1010101');
+SELECT * FROM traza_ejecucion;
