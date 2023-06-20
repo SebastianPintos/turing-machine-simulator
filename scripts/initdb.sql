@@ -1,5 +1,9 @@
 \c turingmachine
 
+DROP TABLE IF EXISTS programa;
+DROP TABLE IF EXISTS traza_ejecucion;
+DROP TABLE IF EXISTS alfabeto;
+
 CREATE TABLE programa(
     estado_ori varchar(50) NOT NULL,
     caracter_ori varchar(50) NOT NULL,
@@ -13,8 +17,9 @@ CREATE TABLE traza_ejecucion(
     estado_ori varchar(50),
     caracter_ori varchar(50),
     estado_nue varchar(50),
-    caracter_nue varchar(50) ,
-    desplazamiento varchar(50) 
+    caracter_nue varchar(50),
+    desplazamiento varchar(50),
+    cadena varchar(50)
 );
 
 CREATE TABLE alfabeto(
