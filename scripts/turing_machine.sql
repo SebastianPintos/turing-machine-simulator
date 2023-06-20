@@ -7,7 +7,6 @@ DECLARE
     DEFAULT 'q0';
     cin_long integer;
     i integer := 1;
-    counter integer := 1;
     pos integer := 2;
     caracter char(1);
 BEGIN
@@ -38,9 +37,17 @@ BEGIN
         AND caracter_ori = substring(cinta_input FROM pos FOR 1)
     LIMIT 1;
 
-    WHILE t_est <> 'f' AND counter < 200 LOOP
+    WHILE t_est <> 'f' LOOP
         INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
             VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
+			
+		IF prog.estado_ori is null
+			AND  prog.caracter_ori is null
+			AND  prog.estado_nue is null
+			AND  prog.caracter_nue is null 
+			THEN
+				exit;
+		END IF;
 
         IF prog.caracter_ori <> prog.caracter_nue  THEN
           cinta_input = CONCAT(SUBSTRING(cinta_input FROM 1 FOR pos - 1), prog.caracter_nue, SUBSTRING(cinta_input FROM pos + 1));
@@ -54,10 +61,7 @@ BEGIN
 
         IF prog.estado_ori <> prog.estado_nue AND t_est <> prog.estado_nue THEN
             t_est := prog.estado_nue;
-        ELSE
-            RAISE NOTICE 'T_est: %', t_est;
-        END IF;
-
+		END IF;
 
         IF prog.desplazamiento = 'R' THEN
             pos = pos + 1;
@@ -67,8 +71,6 @@ BEGIN
             pos = pos - 1;
         END IF;
 
-        counter = counter + 1;
-
         SELECT
             * INTO prog
         FROM
@@ -77,6 +79,7 @@ BEGIN
             estado_ori = t_est
             AND caracter_ori = substring(cinta_input FROM pos FOR 1)
         LIMIT 1;
+			
     END LOOP;
 
     RAISE NOTICE 'estado final string %', cinta_input;
