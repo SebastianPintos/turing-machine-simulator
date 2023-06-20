@@ -8,7 +8,7 @@ Access to postgreSQL
 
 Create new database
 
-`"CREATE DATABASE "turingmachine";`
+`CREATE DATABASE "turingmachine";`
 
 Connect to the new database
 
