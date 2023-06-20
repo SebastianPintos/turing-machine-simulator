@@ -69,3 +69,4 @@ INSERT INTO programa VALUES ('q10','_','f','_','R');
 
 
 SELECT simuladorMT('1010001');
+SELECT * FROM traza_ejecucion;
