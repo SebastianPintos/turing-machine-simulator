@@ -1,5 +1,6 @@
-DELETE FROM programa;
-DELETE FROM alfabeto;
+TRUNCATE alfabeto;
+TRUNCATE programa;
+
 
 INSERT INTO alfabeto VALUES ('0');
 INSERT INTO alfabeto VALUES ('1');
@@ -35,3 +36,5 @@ INSERT INTO programa VALUES ('qSearch0L','_','f','_','_');
 INSERT INTO programa VALUES ('qSearch0R','_','f','_','_');
 INSERT INTO programa VALUES ('qSearch1L','_','f','_','_');
 INSERT INTO programa VALUES ('qSearch1R','_','f','_','_');
+
+SELECT simuladorMT('1010101');
