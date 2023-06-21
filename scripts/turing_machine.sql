@@ -41,13 +41,15 @@ END LOOP;
     LIMIT 1;
     -- itera hasta alcanzar el estado final
     WHILE t_est <> 'f' LOOP
-        -- añade a la traza_ejecucion cada paso realizado por la máquina
-        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
-            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
         -- comprueba que está en un estado válido
         IF prog.estado_ori IS NULL AND prog.caracter_ori IS NULL AND prog.estado_nue IS NULL AND prog.caracter_nue IS NULL THEN
             exit;
         END IF;
+		
+		-- añade a la traza_ejecucion cada paso realizado por la máquina
+        INSERT INTO traza_ejecucion(estado_ori, caracter_ori, estado_nue, caracter_nue, desplazamiento, cadena)
+            VALUES (prog.estado_ori, prog.caracter_ori, prog.estado_nue, prog.caracter_nue, prog.desplazamiento, cinta_input);
+		
         UPDATE
             traza_ejecucion
         SET
@@ -92,34 +94,6 @@ END LOOP;
     ELSE
         RAISE NOTICE 'El string NO pertenece al lenguaje';
     END IF;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-CREATE OR REPLACE FUNCTION descripcionInstantanea()
-    RETURNS VOID
-    AS $$
-DECLARE
-    i integer := 0;
-    result text = '';
-    traza traza_ejecucion%ROWTYPE;
-BEGIN
-    FOR traza IN
-    SELECT
-        *
-    FROM
-        traza_ejecucion
-    ORDER BY
-        traza_id LOOP
-            result = result || substring(traza.cadena FROM 0 FOR i + 1) || '(' || traza.estado_ori || ')' || substring(traza.cadena FROM i + 1 FOR length(traza.cadena)) || ' |- ';
-            IF traza.desplazamiento = 'R' THEN
-                i = i + 1;
-            END IF;
-            IF traza.desplazamiento = 'L' THEN
-                i = i - 1;
-            END IF;
-        END LOOP;
-    RAISE NOTICE '%', result;
 END;
 $$
 LANGUAGE 'plpgsql';
