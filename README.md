@@ -22,6 +22,10 @@ Create the store procedure to generate the turing machine
 
 `\i scripts/turing_machine.sql`
 
+Create the store procedure to print instant descriptions
+
+`\i scripts/di_function.sql`
+
 Run any of the 3 programs (example with binary_palindrome.sql)
 
 `\i scripts/binary_palindrome.sql`
@@ -29,3 +33,7 @@ Run any of the 3 programs (example with binary_palindrome.sql)
 Then you can call the function like this
 
 `SELECT simuladorMT('101101');`
+
+Call function `descripcionInstantanea` to print the instant description of the last execution
+
+`SELECT descripcionInstantanea();`
