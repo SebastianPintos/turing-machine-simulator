@@ -1,10 +1,6 @@
 DELETE FROM programa;
 DELETE FROM alfabeto;
 
-SELECT * FROM programa;
-SELECT * FROM traza_ejecucion;
-SELECT * FROM alfabeto;
-
 INSERT INTO alfabeto VALUES ('0');
 INSERT INTO alfabeto VALUES ('1');
 INSERT INTO alfabeto VALUES ('_');
