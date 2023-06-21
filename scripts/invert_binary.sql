@@ -1,10 +1,5 @@
 DELETE FROM programa;
-DELETE FROM traza_ejecucion;
 DELETE FROM alfabeto;
-
-SELECT * FROM programa;
-SELECT * FROM traza_ejecucion;
-SELECT * FROM alfabeto;
 
 INSERT INTO alfabeto VALUES ('0');
 INSERT INTO alfabeto VALUES ('1');
@@ -65,8 +60,3 @@ INSERT INTO programa VALUES ('q9','_','q10','_','L');
 INSERT INTO programa VALUES ('q10','x','q10','0','L');
 INSERT INTO programa VALUES ('q10','y','q10','1','L');
 INSERT INTO programa VALUES ('q10','_','f','_','R');
-
-
-
-SELECT simuladorMT('1010001');
-SELECT * FROM traza_ejecucion;

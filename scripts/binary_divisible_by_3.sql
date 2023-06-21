@@ -1,5 +1,4 @@
 DELETE FROM programa;
-DELETE FROM traza_ejecucion;
 DELETE FROM alfabeto;
 
 SELECT * FROM programa;
@@ -17,6 +16,3 @@ INSERT INTO programa VALUES ('q1','1','q0','1','R');
 INSERT INTO programa VALUES ('q2','0','q1','0','R');
 INSERT INTO programa VALUES ('q2','1','q2','1','R');
 INSERT INTO programa VALUES ('q0','_','f','_','_');
-
-SELECT simuladorMT('1001');
-SELECT * FROM traza_ejecucion;
